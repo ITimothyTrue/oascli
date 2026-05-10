@@ -6,7 +6,7 @@ oascli is a CLI tool for OpenAPI schema based Service, acting as a universal cli
 
 ### Get Started
 
-Download latest oascli from [https://github.com/ITimothyTrue/oascli/releases/tag/v1.0.0](https://github.com/ITimothyTrue/oascli/releases/tag/v1.0.0)
+Download latest oascli from [https://github.com/ITimothyTrue/oascli/releases/tag/v1.0.1](https://github.com/ITimothyTrue/oascli/releases/tag/v1.0.1)
 
 Note: if your box is Mac OS, you may meet with oascli not being trusted when opening it. Go to 'System Settings | Privacy & Security', scroll down and trust it from the 'Security' section, then re-open oascli.
 
@@ -102,6 +102,7 @@ func                         Function operations
     get                      Get function details. Arguments: <function> [function ...]
     sample                   Generate a json payload for a function, or save it locally. Arguments: <function> [file]
     call                     Invoke a function. Arguments: <function> [json/file]
+    curl                     Generate a curl command. Arguments: <function> [json/file]
 
 auth                         Manage authentications
     add                      Add a new authentication. Arguments: <auth-id> <type> <properties>
@@ -124,7 +125,8 @@ svc                          Manage web services
     functions                List functions of services. Arguments: [svc-id ...]
     parse                    Parse services. Arguments: [svc-id ...]
     prefix                   Update a service prefix. Arguments: <svc-id> <prefix>
-    enable                   Enable a service or not. Arguments: <svc-id> <on/off>
+    disable                  Disable services for MCP modes. Arguments: <svc-id> [svc-id ...]
+    enable                   Enable services for MCP modes. Arguments: <svc-id> [svc-id ...]
 
 Local file operations
 cat                          Display the contents of a file on local machine. Arguments: <file>
@@ -171,7 +173,7 @@ prop                         Manage properties
 
 #### Cache
 
-Cache can be enanbled to improve processing performance for schemas, so as not to parse schemas per request.
+Cache can be enanbled to improve processing performance by not parsing schemas per request.
 
 | Property | Description | Example |
 |:---------|:------------|:---------|
