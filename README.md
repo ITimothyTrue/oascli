@@ -1,12 +1,12 @@
 # oascli
 
-oascli is a CLI tool for OpenAPI schema based Service, acting as a universal client to manage web services complying with OpenAPI specification. Besides being used standalone, it can run as MCP in both stdio and http modes to integrate web services with AI agents.
+oascli is a CLI tool for OpenAPI schema based Service, acting as a universal client to manage web services complying with OpenAPI specification. Besides being used standalone, it can run as MCP in both stdio and http modes to support AI agents working with web services.
 
 <!-- more -->
 
 ### Get Started
 
-Download latest oascli from [https://github.com/ITimothyTrue/oascli/releases/tag/v1.0.1](https://github.com/ITimothyTrue/oascli/releases/tag/v1.0.1)
+Download latest oascli from [https://github.com/ITimothyTrue/oascli/releases/tag/v1.0.2](https://github.com/ITimothyTrue/oascli/releases/tag/v1.0.2)
 
 Note: if your box is Mac OS, you may meet with oascli not being trusted when opening it. Go to 'System Settings | Privacy & Security', scroll down and trust it from the 'Security' section, then re-open oascli.
 
@@ -38,31 +38,26 @@ Arguments:
 schema add schema1 /path-to/local-openapi-schema.json
 
 schema parse schema1
+schema func-ls schema1
 ```
 
-2. add auth if the web service requires authentication
+2. add service and authentication
 
 ```
-auth add auth1 ...
+svc add svc1 <server-addr> schema1
+
+svc auth add svc1 basic <user> <passwd>
 ```
 
-3. add service and check the functions are parsed successfully
+3. operate the remote service
 
 ```
-svc add svc1 schema1 auth1
+func ls svc1
 
-svc functions svc1
-svc parse svc1
+func call <function>
 ```
 
-4. operate the remote service
-
-```
-func sample function1
-func call function1
-```
-
-5. work as MCP
+4. run as MCP server
 
 ```stdio
 {
@@ -79,7 +74,7 @@ func call function1
 ```
 
 ```http
-// start oascli in http mode
+# start oascli in http mode
 oascli -m http
 
 {
@@ -99,34 +94,33 @@ oascli comes with an intuitive help command:
 ```
 >> help
 func                         Function operations
+    ls                       List functions for services. Arguments: [svc-id ...]
     get                      Get function details. Arguments: <function> [function ...]
-    sample                   Generate a json payload for a function, or save it locally. Arguments: <function> [file]
+    sample                   Generate JSON payloads for functions. Arguments: <function> [function ...]
     call                     Invoke a function. Arguments: <function> [json/file]
     curl                     Generate a curl command. Arguments: <function> [json/file]
 
-auth                         Manage authentications
-    add                      Add a new authentication. Arguments: <auth-id> <type> <properties>
-    get                      Get authentication details. Arguments: <auth-id> [auth-id ...]
-    ls                       List authentications. Arguments: [regex]
-    rm                       Remove an authentication. Arguments: <auth-id> [auth-id ...]
-
 schema                       Manage openapi schemas
-    add                      Add a new openapi schema. Arguments: <schema-id> <URL/file> [method] [auth-id]
+    add                      Add a new openapi schema. Arguments: <schema-id> <URL/file> [method]
     get                      Get schema details. Arguments: <schema-id> [schema-id ...]
     ls                       List schemas. Arguments: [regex]
     rm                       Remove a schema. Arguments: <schema-id> [schema-id ...]
     parse                    Parse schemas. Arguments: [schema-id ...]
+    func-ls                  List functions for schemas. Arguments: [schema-id ...]
+    func-get                 Get function details. Arguments: <schema-id> <function> [function ...]
+    func-sample              Generate JSON payloads for functions. Arguments: <schema-id> <function> [function ...]
+    auth                     Manage authentication for a schema
 
 svc                          Manage web services
-    add                      Add a new web service. Arguments: <svc-id> <address> <schema-id> [auth-id] [prefix]
+    add                      Add a new web service. Arguments: <svc-id> <address> <schema-id> [prefix]
     get                      Get service details. Arguments: <svc-id> [svc-id ...]
     ls                       List services. Arguments: [regex]
     rm                       Remove a service. Arguments: <svc-id> [svc-id ...]
-    functions                List functions of services. Arguments: [svc-id ...]
-    parse                    Parse services. Arguments: [svc-id ...]
     prefix                   Update a service prefix. Arguments: <svc-id> <prefix>
-    disable                  Disable services for MCP modes. Arguments: <svc-id> [svc-id ...]
-    enable                   Enable services for MCP modes. Arguments: <svc-id> [svc-id ...]
+    disable                  Disable or show disabled services for MCP modes. Arguments: [svc-id ...]
+    enable                   Enable or show enabled services for MCP modes. Arguments: [svc-id ...]
+    param                    Manage common parameters
+    auth                     Manage authentication for a service
 
 Local file operations
 cat                          Display the contents of a file on local machine. Arguments: <file>
@@ -136,14 +130,6 @@ ls                           List file, directory or regex matched items. Argume
 mkdir                        Make a directory on local machine. Arguments: <dir>
 pwd                          Show the current directory on local machine
 rm                           Remove a file, directory or regex matched items. Arguments: <dir/file/regex>
-
-prop                         Manage properties
-    ls                       List properties. Arguments: [key-pattern]
-    keys                     Show property keys. Arguments: [key-pattern]
-    count                    Show count of properties. Arguments: [key-pattern]
-    get                      Get value of a property. Arguments: <key>
-    set                      Set value for a property. Arguments: <key> <value>
-    unset                    Unset a property value. Arguments: <key>
 
 quit                         Exit this program. Same as bye, exit
 help                         Show help
@@ -156,48 +142,25 @@ help                         Show help
 
 > When typing a command, tips will show up for easy usage. Use &lt;tab&gt; key to select from the tip list.
 
-### Properties
-
-Properties are used to tune performance. 
-
-```
->> help prop
-prop                         Manage properties
-    ls                       List properties. Arguments: [key-pattern]
-    keys                     Show property keys. Arguments: [key-pattern]
-    count                    Show count of properties. Arguments: [key-pattern]
-    get                      Get value of a property. Arguments: <key>
-    set                      Set value for a property. Arguments: <key> <value>
-    unset                    Unset a property value. Arguments: <key>
-```
-
-#### Cache
-
-Cache can be enanbled to improve processing performance by not parsing schemas per request.
-
-| Property | Description | Example |
-|:---------|:------------|:---------|
-| cache-schemas | enable cache for schemas | true or false, default value is true |
-
 ### Features
 
 #### Authentication
 
-4 types of authentications are supported: basic, oauth, mtls and token.
+4 types of authentications are supported: basic, oauth, mtls and token. Authentication is mainly required for service access; schema may also require authentication if it's hosted remotely.
 
 ```
-auth add <auth-id> basic <username> <password>
+svc auth add <svc1> basic <username> <password>
 
-auth add <auth-id> oauth <cert-url> <client-id> <client-secret>
+svc auth add <svc1> oauth <cert-url> <client-id> <client-secret>
 
-auth add <auth-id> mtls <key-pem> <cert-pem> [trust-pem]
+svc auth add <svc1> mtls <key-pem> <cert-pem> [trust-pem]
 
-auth add <auth-id> token <key> <token> <header/query>
+svc auth add <svc1> token <key> <token> <header/query>
 ```
 
 #### Schema
 
-A schema refers to an OpenAPI schema content, either from a remote URL or a local file.
+A schema refers to an OpenAPI schema definition, either from a remote URL or a local file.
 
 ```
 schema add <schema-id> <url/file> [method] [auth]
@@ -209,7 +172,8 @@ schema add schema-1 /path-local-file
 schema add schema-2 https://host...
 
 // schema from a remote URL requiring auth
-schema add schema-3 https://host... post auth-1
+schema add schema-3 https://host... post
+schema auth add oauth <cert-url> <client-id> <client-secret>
 ```
 
 #### Service
@@ -219,7 +183,7 @@ A web service provides functionalities by following an OpenAPI schema. Each endp
 > A service can have its own prefix to identify its functions in case different services provide same functions.
 
 ```
-svc add <svc-id> <address> <schema-id> [auth-id] [prefix]
+svc add <svc-id> <address> <schema-id> [prefix]
 ```
 
 #### Function
