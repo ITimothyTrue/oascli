@@ -6,7 +6,7 @@ oascli is a CLI tool for OpenAPI schema based Service, acting as a universal cli
 
 ### Get Started
 
-Download latest oascli from [https://github.com/ITimothyTrue/oascli/releases/tag/v1.0.2](https://github.com/ITimothyTrue/oascli/releases/tag/v1.0.2)
+Download latest oascli from [https://github.com/ITimothyTrue/oascli/releases/tag/v1.0.3](https://github.com/ITimothyTrue/oascli/releases/tag/v1.0.3)
 
 Note: if your box is Mac OS, you may meet with oascli not being trusted when opening it. Go to 'System Settings | Privacy & Security', scroll down and trust it from the 'Security' section, then re-open oascli.
 
@@ -93,23 +93,16 @@ oascli comes with an intuitive help command:
 
 ```
 >> help
-func                         Function operations
-    ls                       List functions for services. Arguments: [svc-id ...]
-    get                      Get function details. Arguments: <function> [function ...]
-    sample                   Generate JSON payloads for functions. Arguments: <function> [function ...]
-    call                     Invoke a function. Arguments: <function> [json/file]
-    curl                     Generate a curl command. Arguments: <function> [json/file]
-
 schema                       Manage openapi schemas
     add                      Add a new openapi schema. Arguments: <schema-id> <URL/file> [method]
     get                      Get schema details. Arguments: <schema-id> [schema-id ...]
     ls                       List schemas. Arguments: [regex]
     rm                       Remove a schema. Arguments: <schema-id> [schema-id ...]
-    parse                    Parse schemas. Arguments: [schema-id ...]
-    func-ls                  List functions for schemas. Arguments: [schema-id ...]
-    func-get                 Get function details. Arguments: <schema-id> <function> [function ...]
-    func-sample              Generate JSON payloads for functions. Arguments: <schema-id> <function> [function ...]
+    prefix                   Update a schema prefix. Arguments: <schema-id> <prefix>
+    disable                  Disable or show disabled schemas for MCP modes. Arguments: [schema-id ...]
+    enable                   Enable or show enabled schemas for MCP modes. Arguments: [schema-id ...]
     auth                     Manage authentication for a schema
+    func                     Manage schema functions
 
 svc                          Manage web services
     add                      Add a new web service. Arguments: <svc-id> <address> <schema-id> [prefix]
@@ -121,6 +114,19 @@ svc                          Manage web services
     enable                   Enable or show enabled services for MCP modes. Arguments: [svc-id ...]
     param                    Manage common parameters
     auth                     Manage authentication for a service
+    func                     Manage service functions
+
+auth                         Manage authentications
+    add                      Add a new authentication. Arguments: <auth-id> <type> <properties>
+    get                      Get authentication details. Arguments: <auth-id> [auth-id ...]
+    ls                       List authentications. Arguments: [regex]
+    rm                       Remove an authentication. Arguments: <auth-id> [auth-id ...]
+
+mcp                          MCP helper operations
+    load                     Load functions. Arguments: <schema/svc> [id ...]
+    unload                   Load functions. Arguments: <schema/svc> [id ...]
+    ls                       List loaded functions. Arguments: <schema/svc> [id ...]
+    get                      Get function details. Arguments: <function> [function ...]
 
 Local file operations
 cat                          Display the contents of a file on local machine. Arguments: <file>
@@ -188,17 +194,20 @@ svc add <svc-id> <address> <schema-id> [prefix]
 
 #### Function
 
-A function is implicitly an endpoint (method) from a web service.
+A function is implicitly an endpoint (method), from either a schema or service.
 
 ```
+// list functions of a service
+svc func ls <schema-id>
+
 // get a function signature
-func get function-name
+svc func get <schema-id> function-name
 
 // generate a sample 
-func sample function-name
+svc func sample <schema-id> function-name
 
 // invoke remote method
-func call function-name 'json-payload'
+svc func call <schema-id> function-name 'json-payload'
 ```
 
 #### Regular Expression
