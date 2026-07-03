@@ -1,6 +1,6 @@
 # oascli
 
-oascli is a CLI tool for OpenAPI schema based Service, acting as a universal client to manage web services complying with OpenAPI specification. Besides being used standalone, it can run as MCP in both stdio and http modes to support AI agents working with web services.
+oascli is a CLI tool and universal client for OpenAPI-compliant web services. It can operate standalone or as a customizable MCP server — in either stdio or HTTP mode — enabling AI agents to interact with any service backed by an OpenAPI specification.
 
 <!-- more -->
 
